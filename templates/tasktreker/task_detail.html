@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Task List</title>
+{% endblock %}
+
+{% block content %}
+<ul>
+        <li>
+            <a>{{ task.title }}</a>
+            <p>{{ task.description }}</p>
+            <p>{{ task.status }}</p>
+            <p>{{ task.priority }}</p>
+            <p>{{ task.creater }}</p>
+        </li>
+    {% empty %}
+    <p>No tasks found</p>
+</ul>
+{% endblock %}
