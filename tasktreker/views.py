@@ -1,8 +1,9 @@
 from django.db.models.query import QuerySet
-from django.shortcuts import render
-from .models import Task
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import TaskForm, TaskFilterForm
+from django.shortcuts import render , redirect , get_object_or_404
+from django.http import HttpResponseRedirect
+from .models import Task, Comment, Like
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
+from .forms import TaskForm, TaskFilterForm , CommentForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .mixin import UserIsOwnerMixin
@@ -27,7 +28,25 @@ class TaskListViews(ListView):
 class TaskDetailViews(DetailView):
     model = Task
     context_object_name = 'task'
+    
+    def form_valid(self, form):
+        form.instance.creater = self.request.user
+        return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["coment_form"] = CommentForm()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        coment_form = CommentForm(request.POST, request.FILES)
+        if coment_form.is_valid():
+            comment = coment_form.save(commit=False)
+            comment.author = request.user
+            comment.task = self.get_object()
+            comment.save()
+            return redirect('task-detail', pk=comment.task.pk)
+    
 
 class TaskCreateView(CreateView):
     model = Task
@@ -44,3 +63,13 @@ class TaskUpdateView(LoginRequiredMixin,UserIsOwnerMixin, UpdateView):
     form_class = TaskForm
     success_url = reverse_lazy('task-list')
 
+
+class CommentLikeToggel(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=self.kwargs.get("pk"))
+        likeq = Like.objects.filter(comment = comment, user = request.user)
+        if likeq.exists():
+            likeq.delete()
+        else:
+            Like.objects.create(comment = comment, user = request.user)
+        return HttpResponseRedirect(comment.get_absolute_url())

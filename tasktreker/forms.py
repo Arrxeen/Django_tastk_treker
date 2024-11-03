@@ -1,4 +1,4 @@
-from .models import Task
+from .models import Task , Comment
 from django import forms
 
 
@@ -23,3 +23,12 @@ class TaskFilterForm(forms.Form):
     ]
         
     status = forms.ChoiceField(choices=STATUSE_CHOISES, required=False , label = "status")
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content','media']
+        widgets = {
+            "media":forms.FileInput()
+        }

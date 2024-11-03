@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+{% load custom_tags %}
 <ul>
         <li>
             <a>{{ task.title }}</a>
@@ -14,4 +15,41 @@
             <p>{{ task.creater }}</p>
         </li>
 </ul>
+<h1>Comments</h1>
+
+<form action="{% url 'task-detail' task.pk %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ coment_form.as_p}}
+
+<button type="submit">Submit</button>
+
+</form>
+
+{% for comment in task.comments.all %}
+<ul>
+    <li>
+        <p>{{ comment.author }}</p>
+        <p>{{ comment.content }}</p>
+        <p>{{ comment.created_at }}</p>
+        {% if comment.media %}
+            {% if comment.media.url|endswith:".jpg" or comment.media.url|endswith:".png" or comment.media.url|endswith:".jpeg" %}
+        <img src="{{ comment.media.url }}" alt="img">
+            {% elif comment.media.url|endswith:".mp4" %}
+        <video width="10" height="10" controls>
+            <source src="{{ comment.media.url }}" type="video/mp4" >
+        </video>
+            {% else %}
+        <a href="{{ comment.media.url }}">Завантажити</a>
+            {% endif %}
+        {% endif %}
+        <form method="post" action="{% url 'comment-toggle-like' comment.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm {% if request.user in comment.likes.all %}btn-success{% else %}btn-outline-success{% endif %}">
+                Like {{ comment.likes.count }}
+            </button> 
+        </form>
+    </li>
+</ul>
+
+{% endfor %}
 {% endblock %}
