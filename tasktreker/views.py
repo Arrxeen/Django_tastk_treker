@@ -1,6 +1,10 @@
 from django.db.models.query import QuerySet
+from django.forms import BaseModelForm
 from django.shortcuts import render , redirect , get_object_or_404
-from django.http import HttpResponseRedirect
+from django.contrib.auth.views import LoginView, LogoutView 
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import Task, Comment, Like
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
 from .forms import TaskForm, TaskFilterForm , CommentForm
@@ -73,3 +77,22 @@ class CommentLikeToggel(LoginRequiredMixin,View):
         else:
             Like.objects.create(comment = comment, user = request.user)
         return HttpResponseRedirect(comment.get_absolute_url())
+    
+
+class CustomLoginView(LoginView):
+    template_name = 'tasktreker/login.html'
+    redirect_authenticated_user = True
+
+
+class CustomLogoutView(LogoutView):
+    next_page = 'login'
+
+
+class RegisterView(CreateView):
+    template_name = 'tasktreker/register.html'
+    form_class = UserCreationForm
+    
+    def form_valid(self, form): 
+        user = form.save()
+        login(self.request, user)
+        return redirect(reverse_lazy('login'))

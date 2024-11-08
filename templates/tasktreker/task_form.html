@@ -1,13 +1,20 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+
 {% block title %}
 <title>Task List</title>
 {% endblock %}
 
 {% block content %}
-<form method="POST" >
-    {%csrf_token%}
-    {{ form.as_p}}
-    <button type="submit">Submit</button>
-</form>
+<div>
+    <link rel="stylesheet" href="{% static 'css/style_form.css' %}">
+    
+    <form class="creat-form" method="POST" >
+        {%csrf_token%}
+        {{ form.as_p}}
+        <button class="comment-form " type="submit">Submit</button>  
+    </form>
+</div>
 {% endblock %}

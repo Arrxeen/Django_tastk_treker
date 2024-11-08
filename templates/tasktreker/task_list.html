@@ -5,12 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<form method="GET">
-    {{ form.status.label_tag }}
-    {{ form.status }}
 
-    <button type="submit">Filter</button>
-</form>
 <ul>
     {% for task in tasks %}
         <li>
@@ -24,4 +19,5 @@
         {% endfor %}
     </ul>
     <a href="{% url 'task-created' %}">Created</a>
+    
 {% endblock %}

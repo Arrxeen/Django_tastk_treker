@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 
+
 {% block title %}
 <title>Task List</title>
 {% endblock %}
 
 {% block content %}
+
+
 {% load custom_tags %}
 <ul>
         <li>
@@ -17,7 +20,7 @@
 </ul>
 <h1>Comments</h1>
 
-<form action="{% url 'task-detail' task.pk %}" method="POST" enctype="multipart/form-data">
+<form class="comment-form" action="{% url 'task-detail' task.pk %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ coment_form.as_p}}
 
