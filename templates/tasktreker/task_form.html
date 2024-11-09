@@ -8,13 +8,13 @@
 {% endblock %}
 
 {% block content %}
-<div>
-    <link rel="stylesheet" href="{% static 'css/style_form.css' %}">
+<link rel="stylesheet" href="{% static 'css/style_form.css' %}">
+<div class="centery test">
     
-    <form class="creat-form" method="POST" >
+    <form class="creat-form " method="POST" >
         {%csrf_token%}
         {{ form.as_p}}
-        <button class="comment-form " type="submit">Submit</button>  
+        <button class="comment-form centery" type="submit">Submit</button>  
     </form>
 </div>
 {% endblock %}

@@ -52,3 +52,12 @@ class Like(models.Model):
 
     class Meta:
         unique_together = ('user','comment')
+
+
+class Dislike(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='disliked_comments')
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='dislikes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user','comment')

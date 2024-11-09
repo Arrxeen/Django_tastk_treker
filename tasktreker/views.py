@@ -5,8 +5,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Task, Comment, Like
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
+from .models import Task, Comment, Like, Dislike
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View, DeleteView
 from .forms import TaskForm, TaskFilterForm , CommentForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -68,14 +68,43 @@ class TaskUpdateView(LoginRequiredMixin,UserIsOwnerMixin, UpdateView):
     success_url = reverse_lazy('task-list')
 
 
+class TaskDeliteView(LoginRequiredMixin,UserIsOwnerMixin, DeleteView):
+    model = Task
+    success_url = reverse_lazy('task-list')
+    template_name = "tasktreker/tasktreker_delete.html"
+
+
 class CommentLikeToggel(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         comment = get_object_or_404(Comment, pk=self.kwargs.get("pk"))
         likeq = Like.objects.filter(comment = comment, user = request.user)
+        dislikeq = Dislike.objects.filter(comment = comment, user = request.user)
+        if dislikeq.exists():
+            dislikeq.delete()
+            if not likeq.exists():
+                Like.objects.create(comment = comment, user = request.user)
+        else:
+            if likeq.exists():
+                likeq.delete()
+            else:
+                Like.objects.create(comment = comment, user = request.user)
+        return HttpResponseRedirect(comment.get_absolute_url())
+
+
+class CommentDislikeToggel(LoginRequiredMixin,View):
+    def post(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=self.kwargs.get("pk"))
+        dislikeq = Dislike.objects.filter(comment = comment, user = request.user)
+        likeq = Like.objects.filter(comment = comment, user = request.user)
         if likeq.exists():
             likeq.delete()
+            if not dislikeq.exists():
+                Dislike.objects.create(comment = comment, user = request.user)
         else:
-            Like.objects.create(comment = comment, user = request.user)
+            if dislikeq.exists():
+                dislikeq.delete()
+            else:
+                Dislike.objects.create(comment = comment, user = request.user)
         return HttpResponseRedirect(comment.get_absolute_url())
     
 

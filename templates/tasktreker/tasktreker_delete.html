@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style_form.css' %}">
+<div class="centery">
+    <form  method="post">{% csrf_token %}
+        <p>Are you sure you want to delete "{{ object }}"?</p>
+        <button type="submit">Confirm</button>
+    </form>
+</div>
+{% endblock %}

@@ -22,7 +22,7 @@
                   <li class="nav-item">
                     <form action="{% url 'logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit">Вихід</button>
+                        <button style="margin-right: 20px;" class="btn active" aria-pressed="true" type="submit">Logout</button>
                     </form>
                   </li>
                 {% else %}
@@ -33,11 +33,18 @@
                     <a class="navbar-brand" href="{% url 'login' %}">Login</a>
                   </li>
                 {% endif %}
+                <li>
+                  {% if request.user.is_authenticated %}
+                      <a class="btn btn-primary" role="button" href="{% url 'task-created' %}">Created</a>
+                  {% else %}
+                      <a class="btn btn-primary disabled" role="button" aria-disabled="true" href="{% url 'task-created' %}">Login for creat post</a>
+                  {% endif %}
+                </li>
                   </li>
                 </ul>
                 <form class="d-flex" method="GET">
                     {{ form.status }}
-                    <button type="submit">Filter</button>
+                    <button class="btn btn-secondary btn-sm" type="submit">Filter</button>
                 </form>
               </div>
             </div>
